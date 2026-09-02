@@ -6,3 +6,4 @@ Before planning or editing, find the row whose globs match the file's path and r
 | --- | --- |
 | {database/seeders/**,database/factories/**,database/fixtures/**,tests/**} | .ai/rules/fixtures.md |
 | **, composer.json | .ai/rules/general.md |
+| app/Mcp/** | .ai/rules/mcp.md |
