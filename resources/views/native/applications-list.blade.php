@@ -1,11 +1,3 @@
-@php
-    $statusVariant = fn (string $status): string => match ($status) {
-        'queued' => 'accent',
-        'rejected', 'withdrawn', 'ghosted' => 'destructive',
-        default => 'primary',
-    };
-@endphp
-
 <native:top-bar title="AppTracker" display-mode="large">
     <native:top-bar-action id="settings" label="Settings" icon="settings" url="/settings" a11y-label="Settings" />
 </native:top-bar>
@@ -33,7 +25,7 @@
                         <native:text class="text-sm text-theme-on-surface-variant">{{ $application->role }}</native:text>
                     </native:column>
                     <native:column class="gap-1 items-end">
-                        <native:badge label="{{ ucfirst($application->status->value) }}" variant="{{ $statusVariant($application->status->value) }}" />
+                        <native:badge label="{{ ucfirst($application->status->value) }}" variant="{{ $application->status->badgeVariant() }}" />
                         @if ($application->tier !== null)
                             <native:badge label="Tier {{ $application->tier->value }}" variant="primary" />
                         @endif

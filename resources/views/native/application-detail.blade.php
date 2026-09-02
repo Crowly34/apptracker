@@ -1,10 +1,5 @@
-@php
-    $statusVariant = match ($application['status']) {
-        'queued' => 'accent',
-        'rejected', 'withdrawn', 'ghosted' => 'destructive',
-        default => 'primary',
-    };
-@endphp
+@use('App\Enums\StatusEnum')
+@php($status = StatusEnum::from($application['status']))
 
 <native:top-bar title="{{ $application['company'] }}" />
 
@@ -13,7 +8,7 @@
         <native:column class="gap-2">
             <native:text class="text-2xl font-bold text-theme-on-background">{{ $application['role'] }}</native:text>
             <native:row class="gap-2 items-center">
-                <native:badge label="{{ ucfirst($application['status']) }}" variant="{{ $statusVariant }}" />
+                <native:badge label="{{ ucfirst($status->value) }}" variant="{{ $status->badgeVariant() }}" />
                 @if ($application['tier'] !== null)
                     <native:badge label="Tier {{ $application['tier'] }}" variant="primary" />
                 @endif

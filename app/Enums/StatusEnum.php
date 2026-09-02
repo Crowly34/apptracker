@@ -37,4 +37,26 @@ enum StatusEnum: string
     {
         return in_array($this, [self::Rejected, self::Withdrawn, self::Ghosted], true);
     }
+
+    /** @return list<string> Backing values of the "Active" view, for whereIn(). */
+    public static function activeValues(): array
+    {
+        return array_column(array_filter(self::cases(), fn (self $status) => $status->isActive()), 'value');
+    }
+
+    /** @return list<string> Backing values of the "Closed" view, for whereIn(). */
+    public static function closedValues(): array
+    {
+        return array_column(array_filter(self::cases(), fn (self $status) => $status->isClosed()), 'value');
+    }
+
+    /** Phone-UI badge variant for this status (shared by the list and detail views). */
+    public function badgeVariant(): string
+    {
+        return match ($this) {
+            self::Queued => 'accent',
+            self::Rejected, self::Withdrawn, self::Ghosted => 'destructive',
+            default => 'primary',
+        };
+    }
 }

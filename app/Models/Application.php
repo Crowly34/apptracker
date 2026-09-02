@@ -6,6 +6,7 @@ use App\Enums\StatusEnum;
 use App\Enums\TierEnum;
 use Database\Factories\ApplicationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -68,5 +69,33 @@ class Application extends Model
             'applied_at' => 'date',
             'next_action_due' => 'date',
         ];
+    }
+
+    /**
+     * The three phone views. Ordering is part of each view's contract, so it
+     * lives here rather than being re-derived at every call site.
+     *
+     * @param  Builder<$this>  $query
+     */
+    public function scopeQueued(Builder $query): void
+    {
+        $query->where('status', StatusEnum::Queued->value)
+            ->orderByRaw("case tier when 'A' then 1 when 'B' then 2 when 'C' then 3 else 4 end")
+            ->orderBy('created_at');
+    }
+
+    /** @param  Builder<$this>  $query */
+    public function scopeActive(Builder $query): void
+    {
+        $query->whereIn('status', StatusEnum::activeValues())
+            ->orderBy('next_action_due')
+            ->orderByDesc('updated_at');
+    }
+
+    /** @param  Builder<$this>  $query */
+    public function scopeClosed(Builder $query): void
+    {
+        $query->whereIn('status', StatusEnum::closedValues())
+            ->orderByDesc('updated_at');
     }
 }

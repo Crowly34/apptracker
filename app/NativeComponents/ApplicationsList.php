@@ -18,8 +18,6 @@ class ApplicationsList extends NativeComponent
 
     public bool $isOffline = false;
 
-    public int $refreshVersion = 0;
-
     public function mount(): void
     {
         $this->sync();
@@ -28,21 +26,11 @@ class ApplicationsList extends NativeComponent
     #[Computed]
     public function applications(): Collection
     {
-        $this->refreshVersion;
-
-        return Application::query()
-            ->when($this->activeTab === 0, fn ($query) => $query
-                ->where('status', 'queued')
-                ->orderByRaw("case tier when 'A' then 1 when 'B' then 2 when 'C' then 3 else 4 end")
-                ->orderBy('created_at'))
-            ->when($this->activeTab === 1, fn ($query) => $query
-                ->whereIn('status', ['applied', 'screening', 'interview', 'offer'])
-                ->orderBy('next_action_due')
-                ->orderByDesc('updated_at'))
-            ->when($this->activeTab === 2, fn ($query) => $query
-                ->whereIn('status', ['rejected', 'withdrawn', 'ghosted'])
-                ->orderByDesc('updated_at'))
-            ->get();
+        return match ($this->activeTab) {
+            1 => Application::active()->get(),
+            2 => Application::closed()->get(),
+            default => Application::queued()->get(),
+        };
     }
 
     public function selectTab(int $tab): void
@@ -57,14 +45,12 @@ class ApplicationsList extends NativeComponent
 
         if ($this->isOffline) {
             $this->syncMessage = 'Offline — showing your last sync.';
-            $this->refreshVersion++;
 
             return;
         }
 
         $result = app(SyncApplications::class)->handle();
         $this->syncMessage = $result->message;
-        $this->refreshVersion++;
     }
 
     public function openApplication(int $id): void
