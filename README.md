@@ -26,7 +26,8 @@ build something that works for me.
 
 ## Screenshots
 
-_TODO_
+<img width="1206" height="2622" alt="file-0925abfb16037dd7c73de5726a1bf30d" src="https://github.com/user-attachments/assets/c557998c-e285-462b-95a7-fcc687121b20" />
+
 
 ## Setup
 
