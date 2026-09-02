@@ -3,10 +3,10 @@
 namespace App\Mcp\Tools;
 
 use App\Enums\TierEnum;
+use App\Http\Requests\ApplicationRules;
 use App\Models\Application;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
-use Illuminate\Validation\Rule;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -20,12 +20,12 @@ class CreateApplicationTool extends Tool
     public function handle(Request $request): Response
     {
         $validated = $request->validate([
-            'company' => ['required', 'string', 'max:255'],
-            'role' => ['required', 'string', 'max:255'],
-            'posting_url' => ['sometimes', 'nullable', 'url', 'max:2048'],
-            'source' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'tier' => ['sometimes', 'nullable', Rule::enum(TierEnum::class)],
-            'notes' => ['sometimes', 'nullable', 'string'],
+            'company' => ['required', ...ApplicationRules::for('company')],
+            'role' => ['required', ...ApplicationRules::for('role')],
+            'posting_url' => ['sometimes', 'nullable', ...ApplicationRules::for('posting_url')],
+            'source' => ['sometimes', 'nullable', ...ApplicationRules::for('source')],
+            'tier' => ['sometimes', 'nullable', ...ApplicationRules::for('tier')],
+            'notes' => ['sometimes', 'nullable', ...ApplicationRules::for('notes')],
             'force' => ['sometimes', 'boolean'],
         ]);
 

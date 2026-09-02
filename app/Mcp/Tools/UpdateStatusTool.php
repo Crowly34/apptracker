@@ -3,11 +3,11 @@
 namespace App\Mcp\Tools;
 
 use App\Enums\StatusEnum;
+use App\Http\Requests\ApplicationRules;
 use App\Models\Application;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -22,8 +22,8 @@ class UpdateStatusTool extends Tool
     {
         $validated = $request->validate([
             'id' => ['required', 'integer'],
-            'status' => ['required', Rule::enum(StatusEnum::class)],
-            'note' => ['sometimes', 'nullable', 'string'],
+            'status' => ['required', ...ApplicationRules::for('status')],
+            'note' => ['sometimes', 'nullable', ...ApplicationRules::for('notes')],
         ]);
 
         $application = Application::find($validated['id']);
